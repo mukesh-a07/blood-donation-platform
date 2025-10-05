@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeDrop — Enhanced Blood Donation Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    /* ---------- Enhanced CSS with Animations ---------- */
+    :root{
+      --accent:#dc2626;
+      --accent-dark:#b91c1c;
+      --success:#16a34a;
+      --warning:#ca8a04;
+      --info:#2563eb;
+      --bg:#f8fafc;
+      --card:#ffffff;
+      --muted:#64748b;
+      --radius:16px;
+      --maxw:1200px;
+      --shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      25% { transform: scale(1.1); }
+      50% { transform: scale(1.05); }
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      line-height: 1.6;
+      color: #1e293b;
+    }
+
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header Styles */
+    .header {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: white;
+      padding: 1rem 0;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      animation: slideIn 0.6s ease;
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo i {
+      animation: heartbeat 2s infinite;
+      color: #fecaca;
+    }
+
+    .status-indicators {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #fca5a5;
+    }
+
+    .status-dot.connected {
+      background: #86efac;
+      box-shadow: 0 0 8px rgba(134, 239, 172, 0.6);
+    }
+
+    .admin-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .admin-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .admin-btn.logged-in {
+      background: #16a34a;
+      border-color: #16a34a;
+    }
+
+    /* Navigation */
+    .nav {
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 1rem 0;
+      margin-bottom: 2rem;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .nav-list {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-item {
+      cursor: pointer;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius);
+      transition: all 0.3s ease;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .nav-item:hover {
+      background: #f1f5f9;
+      transform: translateY(-2px);
+    }
+
+    .nav-item.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .nav-item.admin-only {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .nav-item.admin-only.enabled {
+      opacity: 1;
+      cursor: pointer;
+    }
+
+    .nav-item.admin-only.enabled::before {
+      content: "🔓 ";
+      color: #16a34a;
+    }
+
+    .nav-item.admin-only:not(.enabled)::before {
+      content: "🔒 ";
+      color: #64748b;
+    }
+
+    .nav-item i {
+      font-size: 1.1rem;
+    }
+
+    /* Section Styles */
+    .section {
+      display: none;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+      padding: 3rem 0;
+      border-radius: var(--radius);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      animation: fadeInUp 1s ease;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      animation: fadeInUp 1.2s ease;
+    }
+
+    .alert {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: var(--accent-dark);
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: pulse 2s infinite;
+    }
+
+    .alert.success {
+      background: #f0fdf4;
+      border-color: #86efac;
+      color: var(--success);
+    }
+
+    .alert.error {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      color: var(--accent-dark);
+    }
+
+    .alert.warning {
+      background: #fff3cd;
+      border-color: #ffeaa7;
+      color: var(--warning);
+    }
+
+    .alert.info {
+      background: #e0f2fe;
+      border-color: #81d4fa;
+      color: var(--info);
+    }
+
+    /* Card Styles */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid #f1f5f9;
+      animation: fadeInUp 0.8s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .card.admin-only:not(.enabled) {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .card.admin-only:not(.enabled):hover {
+      transform: none;
+      box-shadow: var(--shadow);
+    }
+
+    .card.admin-only.enabled {
+      border: 2px solid #16a34a;
+      box-shadow: 0 0 20px rgba(22, 163, 74, 0.2);
+    }
+
+    .card i {
+      font-size: 3rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .card.admin-only:not(.enabled) i {
+      color: #64748b;
+    }
+
+    .card.admin-only.enabled i {
+      color: #16a34a;
+    }
+
+    .card h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: #1e293b;
+    }
+
+    .card p {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .admin-badge {
+      background: #16a34a;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: inline-block;
+    }
+
+    .admin-badge.locked {
+      background: #64748b;
+    }
+
+    /* Button Styles */
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .btn:hover {
+      background: var(--accent-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3);
+    }
+
+    .btn.secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn.secondary:hover {
+      background: #4b5563;
+    }
+
+    .btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      animation: fadeInUp 0.3s ease;
+    }
+
+    .modal.active {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: var(--radius);
+      padding: 2rem;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      animation: slideIn 0.4s ease;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      background: #f1f5f9;
+      color: var(--accent);
+    }
+
+    /* Form Styles */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Table Styles */
+    .table-container {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin: 2rem 0;
+    }
+
+    .table-header {
+      background: var(--accent);
+      color: white;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table th, .table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .badge.danger {
+      background: #fef2f2;
+      color: var(--accent-dark);
+    }
+
+    .badge.success {
+      background: #f0fdf4;
+      color: var(--success);
+    }
+
+    .badge.warning {
+      background: #fffbeb;
+      color: var(--warning);
+    }
+
+    .badge.info {
+      background: #eff6ff;
+      color: var(--info);
+    }
+
+    /* Loading Styles */
+    .loading {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 2rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      z-index: 3000;
+      text-align: center;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f1f5f9;
+      border-top: 4px solid var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-list {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .modal-content {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .status-indicators {
+        justify-content: center;
+      }
+    }
+
+    .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-heart"></i>
+                    LifeDrop — Enhanced
+                </div>
+                <div class="status-indicators">
+                    <div class="status-item">
+                        <div class="status-dot" id="connectionStatus"></div>
+                        <span id="connectionText">Loading...</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot" id="sheetsStatus"></div>
+                        <span id="sheetsText">Google Sheets</span>
+                    </div>
+                    <button class="admin-btn" onclick="toggleAdminMode()" id="adminButton">
+                        <i class="fas fa-user-shield"></i>
+                        <span id="adminButtonText">Admin Login</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <ul class="nav-list">
+                <li class="nav-item active" onclick="showSection('home')">
+                    <i class="fas fa-home"></i>
+                    Home
+                </li>
+                <li class="nav-item" onclick="showSection('register')">
+                    <i class="fas fa-user-plus"></i>
+                    Register as Donor
+                </li>
+                <li class="nav-item admin-only" id="emergencyNavItem" onclick="handleEmergencyNav()">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Emergency Request
+                </li>
+                <li class="nav-item" onclick="showSection('donors')">
+                    <i class="fas fa-users"></i>
+                    View Donors
+                </li>
+                <li class="nav-item admin-only" id="requestsNavItem" onclick="handleRequestsNav()">
+                    <i class="fas fa-list"></i>
+                    View Requests
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Loading Overlay -->
+        <div class="loading" id="loadingOverlay">
+            <div class="spinner"></div>
+            <p>Connecting to Google Sheets...</p>
+        </div>
+
+        <!-- Home Section -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <h1><i class="fas fa-heart"></i> Save Lives with LifeDrop</h1>
+                <p>Connect with blood donors in your area and help save lives in emergency situations</p>
+                <div class="alert">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Critical shortage of O- blood type in local hospitals. Your donation can save lives right now!</strong>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card" onclick="showSection('register')">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>Register as Donor</h3>
+                    <p>Join our community of life-savers and help those in need</p>
+                    <div class="btn">Register Now</div>
+                </div>
+                <div class="card admin-only" id="emergencyCard" onclick="handleEmergencyCard()">
+                    <div class="admin-badge locked" id="emergencyBadge">🔒 Admin Only</div>
+                    <i class="fas fa-exclamation-circle"></i>
+                    <h3>Emergency Request</h3>
+                    <p>Create urgent blood requests for hospitals and patients (Admin Access Required)</p>
+                    <div class="btn" id="emergencyCardBtn" disabled>Admin Login Required</div>
+                </div>
+                <div class="card" onclick="showSection('donors')">
+                    <i class="fas fa-users"></i>
+                    <h3>View Donors</h3>
+                    <p>Browse available donors by blood type and location</p>
+                    <div class="btn">View Donors</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Donor Registration Section -->
+        <section id="register" class="section">
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">
+                        <i class="fas fa-user-plus"></i>
+                        Donor Registration
+                    </div>
+                </div>
+                <div style="padding: 2rem;">
+                    <form id="donorForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Full Name *</label>
+                                <input type="text" name="fullName" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email Address *</label>
+                                <input type="email" name="email" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone Number *</label>
+                                <input type="tel" name="phone" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Blood Type *</label>
+                                <select name="bloodType" class="form-select" required>
+                                    <option value="">Select Blood Type</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Age *</label>
+                                <input type="number" name="age" class="form-input" min="18" max="65" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Weight (kg)</label>
+                                <input type="number" name="weight" class="form-input" min="50">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <select name="gender" class="form-select">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Location *</label>
+                                <input type="text" name="location" class="form-input" placeholder="City, State" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Medical Conditions</label>
+                            <textarea name="medicalConditions" class="form-textarea" placeholder="List any medical conditions or medications"></textarea>
+                        </div>
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <button type="submit" class="btn">
+                                <i class="fas fa-heart"></i>
+                                Register as Donor
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Emergency Request Section (Admin Only) -->
+        <section id="emergency" class="section">
+            <div class="alert info" id="adminRequiredAlert">
+                <i class="fas fa-shield-alt"></i>
+                <strong>Admin Access Required:</strong> This section is restricted to authorized hospital staff and administrators only.
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Emergency Blood Request
+                        <span style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.5rem; border-radius: 8px; font-size: 0.75rem; margin-left: 1rem;">
+                            🔒 Admin Only
+                        </span>
+                    </div>
+                </div>
+                <div style="padding: 2rem;">
+                    <form id="emergencyForm">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Blood Type Needed *</label>
+                                <select name="bloodType" class="form-select" required>
+                                    <option value="">Select Blood Type</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Urgency Level *</label>
+                                <select name="urgency" class="form-select" required>
+                                    <option value="">Select Urgency</option>
+                                    <option value="Critical">Critical (Life threatening)</option>
+                                    <option value="High">High (Within 24 hours)</option>
+                                    <option value="Medium">Medium (Within 48 hours)</option>
+                                    <option value="Low">Low (Within a week)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hospital/Location *</label>
+                                <input type="text" name="hospital" class="form-input" placeholder="Hospital name and location" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Contact Number *</label>
+                                <input type="tel" name="contact" class="form-input" placeholder="Emergency contact number" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Units Needed</label>
+                                <input type="number" name="unitsNeeded" class="form-input" min="1" max="10" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Requester Name</label>
+                                <input type="text" name="requesterName" class="form-input" placeholder="Doctor/Admin name">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Additional Notes</label>
+                            <textarea name="notes" class="form-textarea" placeholder="Any additional information about the emergency"></textarea>
+                        </div>
+                        <div style="text-align: center; margin-top: 2rem;">
+                            <button type="submit" class="btn">
+                                <i class="fas fa-exclamation-circle"></i>
+                                Create Emergency Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Donors List Section -->
+        <section id="donors" class="section">
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">
+                        <i class="fas fa-users"></i>
+                        Available Donors
+                    </div>
+                    <button class="btn secondary" onclick="loadDonors()">
+                        <i class="fas fa-refresh"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Blood Type</th>
+                                <th>Location</th>
+                                <th>Contact</th>
+                                <th>Age</th>
+                                <th>Status</th>
+                                <th>Last Donation</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="donorsTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 2rem;">Loading donors...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Requests List Section (Admin Only) -->
+        <section id="requests" class="section">
+            <div class="alert info">
+                <i class="fas fa-shield-alt"></i>
+                <strong>Admin View:</strong> Emergency requests and donor management tools for authorized staff.
+            </div>
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Emergency Requests
+                        <span style="background: rgba(255,255,255,0.2); padding: 0.25rem 0.5rem; border-radius: 8px; font-size: 0.75rem; margin-left: 1rem;">
+                            🔒 Admin Only
+                        </span>
+                    </div>
+                    <button class="btn secondary" onclick="loadEmergencyRequests()">
+                        <i class="fas fa-refresh"></i>
+                        Refresh
+                    </button>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Blood Type</th>
+                                <th>Hospital/Location</th>
+                                <th>Contact</th>
+                                <th>Urgency</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 2rem;">Loading emergency requests...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Login Modal -->
+        <div class="modal" id="adminLoginModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <i class="fas fa-shield-alt"></i>
+                        Admin Authentication
+                    </div>
+                    <button class="close-btn" onclick="closeAdminModal()">&times;</button>
+                </div>
+                <div class="alert warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Restricted Access:</strong> This area is for authorized hospital staff and administrators only.
+                </div>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label class="form-label">Username *</label>
+                        <input type="text" name="username" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password *</label>
+                        <input type="password" name="password" class="form-input" required>
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button type="submit" class="btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login as Admin
+                        </button>
+                        <button type="button" class="btn secondary" onclick="closeAdminModal()" style="margin-left: 1rem;">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+                <div style="text-align: center; margin-top: 1rem; font-size: 0.9em; color: #64748b;">
+                    
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // LifeDrop Blood Donation Platform - ADMIN RESTRICTED VERSION
+        const CONFIG = {
+            // REPLACE WITH YOUR GOOGLE APPS SCRIPT DEPLOYMENT URL
+            GAS_URL: 'https://script.google.com/macros/s/AKfycbz6syhDFtRw-oZ4_O0WN-WQQDmPPXvXmgohNnC-1rzB_u6QLQDqvL5F-tZ0IUB4m0zhHg/exec',
+
+            ADMIN_USERNAME: 'admin',
+            ADMIN_PASSWORD: 'admin123',
+            BLOOD_TYPES: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+        };
+
+        // Application state
+        const appState = {
+            currentUser: null,
+            isAdminMode: false,
+            donors: [],
+            emergencyRequests: [],
+            isLoading: false,
+            isConnected: false
+        };
+
+        // Utility Functions
+        function updateConnectionStatus(connected) {
+            const statusDot = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('connectionText');
+
+            if (connected) {
+                statusDot.classList.add('connected');
+                statusText.textContent = 'Connected';
+                appState.isConnected = true;
+            } else {
+                statusDot.classList.remove('connected');
+                statusText.textContent = 'Disconnected';
+                appState.isConnected = false;
+            }
+        }
+
+        function updateSheetsStatus(working) {
+            const statusDot = document.getElementById('sheetsStatus');
+            const statusText = document.getElementById('sheetsText');
+
+            if (working) {
+                statusDot.classList.add('connected');
+                statusText.textContent = 'Google Sheets OK';
+            } else {
+                statusDot.classList.remove('connected');
+                statusText.textContent = 'Sheets Error';
+            }
+        }
+
+        function showLoading(show = true) {
+            const loading = document.getElementById('loadingOverlay');
+            if (show) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+            appState.isLoading = show;
+        }
+
+        function showAlert(message, type = 'info', duration = 5000) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.temp-alert');
+            existingAlerts.forEach(alert => alert.remove());
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${type} temp-alert`;
+            alertDiv.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()" style="margin-left: auto; background: none; border: none; font-size: 1.2rem; cursor: pointer;">&times;</button>
+            `;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '10000';
+            alertDiv.style.maxWidth = '400px';
+            alertDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+
+            document.body.appendChild(alertDiv);
+
+            if (duration > 0) {
+                setTimeout(() => alertDiv.remove(), duration);
+            }
+        }
+
+        function showError(message) {
+            showAlert(message, 'error');
+        }
+
+        function showSuccess(message) {
+            showAlert(message, 'success');
+        }
+
+        // Admin Authentication Functions
+        function toggleAdminMode() {
+            if (!appState.isAdminMode) {
+                showAdminLoginModal();
+            } else {
+                logout();
+            }
+        }
+
+        function showAdminLoginModal() {
+            const modal = document.getElementById('adminLoginModal');
+            modal.classList.add('active');
+        }
+
+        function closeAdminModal() {
+            const modal = document.getElementById('adminLoginModal');
+            modal.classList.remove('active');
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const username = formData.get('username');
+            const password = formData.get('password');
+
+            if (username === CONFIG.ADMIN_USERNAME && password === CONFIG.ADMIN_PASSWORD) {
+                appState.isAdminMode = true;
+                appState.currentUser = { username: username, role: 'admin' };
+
+                updateAdminUI();
+                closeAdminModal();
+                showSuccess('Admin access granted! Emergency request features are now available.');
+
+                // Clear form
+                event.target.reset();
+            } else {
+                showError('Invalid admin credentials. Please try again.');
+            }
+        }
+
+        function updateAdminUI() {
+            // Update admin button
+            const adminButton = document.getElementById('adminButton');
+            const adminButtonText = document.getElementById('adminButtonText');
+
+            adminButton.classList.add('logged-in');
+            adminButtonText.textContent = 'Admin Mode (Logout)';
+
+            // Enable admin-only navigation items
+            const emergencyNavItem = document.getElementById('emergencyNavItem');
+            const requestsNavItem = document.getElementById('requestsNavItem');
+
+            emergencyNavItem.classList.add('enabled');
+            requestsNavItem.classList.add('enabled');
+
+            // Enable admin-only cards
+            const emergencyCard = document.getElementById('emergencyCard');
+            const emergencyBadge = document.getElementById('emergencyBadge');
+            const emergencyCardBtn = document.getElementById('emergencyCardBtn');
+
+            emergencyCard.classList.add('enabled');
+            emergencyBadge.textContent = '🔓 Admin Access';
+            emergencyBadge.classList.remove('locked');
+            emergencyCardBtn.textContent = 'Create Request';
+            emergencyCardBtn.removeAttribute('disabled');
+        }
+
+        function logout() {
+            appState.isAdminMode = false;
+            appState.currentUser = null;
+
+            // Update admin button
+            const adminButton = document.getElementById('adminButton');
+            const adminButtonText = document.getElementById('adminButtonText');
+
+            adminButton.classList.remove('logged-in');
+            adminButtonText.textContent = 'Admin Login';
+
+            // Disable admin-only navigation items
+            const emergencyNavItem = document.getElementById('emergencyNavItem');
+            const requestsNavItem = document.getElementById('requestsNavItem');
+
+            emergencyNavItem.classList.remove('enabled');
+            requestsNavItem.classList.remove('enabled');
+
+            // Disable admin-only cards
+            const emergencyCard = document.getElementById('emergencyCard');
+            const emergencyBadge = document.getElementById('emergencyBadge');
+            const emergencyCardBtn = document.getElementById('emergencyCardBtn');
+
+            emergencyCard.classList.remove('enabled');
+            emergencyBadge.textContent = '🔒 Admin Only';
+            emergencyBadge.classList.add('locked');
+            emergencyCardBtn.textContent = 'Admin Login Required';
+            emergencyCardBtn.setAttribute('disabled', 'disabled');
+
+            // If currently viewing admin-only sections, redirect to home
+            const currentSection = document.querySelector('.section.active');
+            if (currentSection && (currentSection.id === 'emergency' || currentSection.id === 'requests')) {
+                showSection('home');
+            }
+
+            showSuccess('Logged out successfully.');
+        }
+
+        // Navigation handlers for admin-only sections
+        function handleEmergencyNav() {
+            if (appState.isAdminMode) {
+                showSection('emergency');
+            } else {
+                showError('Admin login required to access Emergency Request features.');
+                showAdminLoginModal();
+            }
+        }
+
+        function handleRequestsNav() {
+            if (appState.isAdminMode) {
+                showSection('requests');
+            } else {
+                showError('Admin login required to view Emergency Requests.');
+                showAdminLoginModal();
+            }
+        }
+
+        function handleEmergencyCard() {
+            if (appState.isAdminMode) {
+                showSection('emergency');
+            } else {
+                showError('Admin login required to create Emergency Requests.');
+                showAdminLoginModal();
+            }
+        }
+
+        // Google Apps Script Communication (same as before)
+        async function makeGASRequest(action, method = 'GET', data = null) {
+            console.log(`Making ${method} request to GAS: ${action}`, data);
+
+            if (!CONFIG.GAS_URL || CONFIG.GAS_URL.includes('YOUR_SCRIPT_ID')) {
+                throw new Error('Please configure your Google Apps Script URL in CONFIG.GAS_URL');
+            }
+
+            showLoading(true);
+
+            try {
+                let url = CONFIG.GAS_URL;
+                let options = { method, mode: 'cors' };
+
+                if (method === 'GET') {
+                    url += `?action=${action}&_=${Date.now()}`;
+                } else {
+                    const formData = new FormData();
+                    formData.append('action', action);
+                    if (data) {
+                        formData.append('data', JSON.stringify(data));
+                    }
+                    options.body = formData;
+                }
+
+                const response = await fetch(url, options);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const responseText = await response.text();
+                console.log('Raw response:', responseText);
+
+                const result = JSON.parse(responseText);
+
+                if (!result.success) {
+                    throw new Error(result.message || 'Server error');
+                }
+
+                updateConnectionStatus(true);
+                updateSheetsStatus(true);
+                return result;
+
+            } catch (error) {
+                console.error('GAS Request Error:', error);
+                updateConnectionStatus(false);
+                updateSheetsStatus(false);
+                throw error;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Data Operations
+        async function testConnection() {
+            try {
+                const result = await makeGASRequest('test');
+                showSuccess('Connected to Google Sheets successfully!');
+                return true;
+            } catch (error) {
+                showError('Failed to connect: ' + error.message);
+                return false;
+            }
+        }
+
+        async function loadDonors() {
+            try {
+                const result = await makeGASRequest('getDonors');
+                appState.donors = result.donors || [];
+                refreshDonorTable();
+                return appState.donors;
+            } catch (error) {
+                showError('Failed to load donors: ' + error.message);
+                appState.donors = [];
+                refreshDonorTable();
+                return [];
+            }
+        }
+
+        async function loadEmergencyRequests() {
+            try {
+                const result = await makeGASRequest('getRequests');
+                appState.emergencyRequests = result.requests || [];
+                refreshRequestTable();
+                return appState.emergencyRequests;
+            } catch (error) {
+                showError('Failed to load requests: ' + error.message);
+                appState.emergencyRequests = [];
+                refreshRequestTable();
+                return [];
+            }
+        }
+
+        async function saveDonor(donorData) {
+            try {
+                const result = await makeGASRequest('addDonor', 'POST', donorData);
+                showSuccess(result.message || 'Donor registered successfully!');
+                await loadDonors();
+                return result;
+            } catch (error) {
+                showError('Failed to register donor: ' + error.message);
+                throw error;
+            }
+        }
+
+        async function saveEmergencyRequest(requestData) {
+            try {
+                if (!appState.isAdminMode) {
+                    throw new Error('Admin authentication required to create emergency requests');
+                }
+
+                const result = await makeGASRequest('addRequest', 'POST', requestData);
+                showSuccess(result.message || 'Emergency request created successfully!');
+                await loadEmergencyRequests();
+                return result;
+            } catch (error) {
+                showError('Failed to create request: ' + error.message);
+                throw error;
+            }
+        }
+
+        // UI Functions
+        function refreshDonorTable() {
+            const tbody = document.getElementById('donorsTableBody');
+            tbody.innerHTML = '';
+
+            if (appState.donors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 2rem;">No donors found</td></tr>';
+                return;
+            }
+
+            appState.donors.forEach(donor => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${donor.fullName || 'N/A'}</td>
+                    <td><span class="badge danger">${donor.bloodType || 'N/A'}</span></td>
+                    <td>${donor.location || 'N/A'}</td>
+                    <td>${donor.phone || 'N/A'}</td>
+                    <td>${donor.age || 'N/A'}</td>
+                    <td><span class="badge success">${donor.status || 'Available'}</span></td>
+                    <td>${formatDate(donor.lastDonation) || 'Never'}</td>
+                    <td>
+                        <button class="btn" style="font-size: 0.8rem; padding: 0.3rem 0.8rem;" onclick="viewDonor('${donor.id}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        ${appState.isAdminMode ? `
+                            <button class="btn secondary" style="font-size: 0.8rem; padding: 0.3rem 0.8rem; margin-left: 0.5rem;" onclick="toggleDonorStatus('${donor.id}')">
+                                <i class="fas fa-toggle-on"></i> Toggle
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function refreshRequestTable() {
+            const tbody = document.getElementById('requestsTableBody');
+            tbody.innerHTML = '';
+
+            if (appState.emergencyRequests.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 2rem;">No emergency requests found</td></tr>';
+                return;
+            }
+
+            appState.emergencyRequests.forEach(request => {
+                const row = document.createElement('tr');
+                const urgencyClass = {
+                    'Critical': 'danger',
+                    'High': 'warning', 
+                    'Medium': 'info',
+                    'Low': 'success'
+                }[request.urgency] || 'info';
+
+                row.innerHTML = `
+                    <td><span class="badge danger">${request.bloodType || 'N/A'}</span></td>
+                    <td>${request.hospital || 'N/A'}</td>
+                    <td>${request.contact || 'N/A'}</td>
+                    <td><span class="badge ${urgencyClass}">${request.urgency || 'Medium'}</span></td>
+                    <td>${formatDate(request.dateCreated) || 'N/A'}</td>
+                    <td><span class="badge success">${request.status || 'Active'}</span></td>
+                    <td>
+                        <button class="btn" style="font-size: 0.8rem; padding: 0.3rem 0.8rem;" onclick="viewRequest('${request.id}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                        ${appState.isAdminMode ? `
+                            <button class="btn secondary" style="font-size: 0.8rem; padding: 0.3rem 0.8rem; margin-left: 0.5rem;" onclick="markRequestCompleted('${request.id}')">
+                                <i class="fas fa-check"></i> Complete
+                            </button>
+                        ` : ''}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            try {
+                return new Date(dateString).toLocaleDateString();
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        function viewDonor(donorId) {
+            const donor = appState.donors.find(d => d.id === donorId);
+            if (donor) {
+                alert(`Donor Details:\n\nName: ${donor.fullName}\nBlood Type: ${donor.bloodType}\nLocation: ${donor.location}\nPhone: ${donor.phone}\nEmail: ${donor.email || 'N/A'}`);
+            }
+        }
+
+        function viewRequest(requestId) {
+            const request = appState.emergencyRequests.find(r => r.id === requestId);
+            if (request) {
+                alert(`Emergency Request Details:\n\nBlood Type: ${request.bloodType}\nHospital: ${request.hospital}\nContact: ${request.contact}\nUrgency: ${request.urgency}\nNotes: ${request.notes || 'None'}`);
+            }
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            // Check admin access for restricted sections
+            if ((sectionName === 'emergency' || sectionName === 'requests') && !appState.isAdminMode) {
+                showError('Admin login required to access this section.');
+                showAdminLoginModal();
+                return;
+            }
+
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active from nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show target section
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // Add active to clicked nav item
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                const itemText = item.textContent.toLowerCase().replace(/\s+/g, ' ').trim();
+                if (itemText.includes(sectionName) || 
+                    (sectionName === 'home' && itemText.includes('home')) ||
+                    (sectionName === 'register' && itemText.includes('register')) ||
+                    (sectionName === 'emergency' && itemText.includes('emergency')) ||
+                    (sectionName === 'donors' && itemText.includes('view donors')) ||
+                    (sectionName === 'requests' && itemText.includes('view requests'))) {
+                    item.classList.add('active');
+                }
+            });
+
+            // Load data for specific sections
+            if (sectionName === 'donors') {
+                loadDonors();
+            } else if (sectionName === 'requests' && appState.isAdminMode) {
+                loadEmergencyRequests();
+            }
+        }
+
+        // Form Handlers
+        async function handleDonorSubmission(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const donorData = {
+                fullName: formData.get('fullName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                bloodType: formData.get('bloodType'),
+                age: parseInt(formData.get('age')),
+                weight: parseInt(formData.get('weight')) || 0,
+                gender: formData.get('gender'),
+                location: formData.get('location'),
+                medicalConditions: formData.get('medicalConditions') || '',
+                registrationDate: new Date().toISOString(),
+                status: 'Available'
+            };
+
+            try {
+                await saveDonor(donorData);
+                event.target.reset();
+                showSection('donors');
+            } catch (error) {
+                // Error already handled
+            }
+        }
+
+        async function handleEmergencySubmission(event) {
+            event.preventDefault();
+
+            if (!appState.isAdminMode) {
+                showError('Admin authentication required to create emergency requests.');
+                showAdminLoginModal();
+                return;
+            }
+
+            const formData = new FormData(event.target);
+            const requestData = {
+                bloodType: formData.get('bloodType'),
+                hospital: formData.get('hospital'),
+                contact: formData.get('contact'),
+                urgency: formData.get('urgency'),
+                unitsNeeded: parseInt(formData.get('unitsNeeded')) || 1,
+                notes: formData.get('notes') || '',
+                requesterName: formData.get('requesterName') || appState.currentUser?.username || 'Admin',
+                dateCreated: new Date().toISOString(),
+                status: 'Active'
+            };
+
+            try {
+                await saveEmergencyRequest(requestData);
+                event.target.reset();
+                showSection('requests');
+            } catch (error) {
+                // Error already handled
+            }
+        }
+
+        // Additional admin functions
+        async function toggleDonorStatus(donorId) {
+            if (!appState.isAdminMode) {
+                showError('Admin access required to modify donor status.');
+                return;
+            }
+
+            try {
+                const result = await makeGASRequest('toggleDonorStatus', 'POST', { id: donorId });
+                showSuccess('Donor status updated successfully.');
+                await loadDonors();
+            } catch (error) {
+                showError('Failed to update donor status: ' + error.message);
+            }
+        }
+
+        async function markRequestCompleted(requestId) {
+            if (!appState.isAdminMode) {
+                showError('Admin access required to modify requests.');
+                return;
+            }
+
+            try {
+                const result = await makeGASRequest('markRequestCompleted', 'POST', { id: requestId });
+                showSuccess('Request marked as completed.');
+                await loadEmergencyRequests();
+            } catch (error) {
+                showError('Failed to complete request: ' + error.message);
+            }
+        }
+
+        // Initialization
+        async function initializeApp() {
+            console.log('Initializing LifeDrop application...');
+
+            // Test connection
+            await testConnection();
+
+            // Load initial data
+            await Promise.all([loadDonors()]);
+
+            console.log('LifeDrop initialized successfully');
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up form handlers
+            const donorForm = document.getElementById('donorForm');
+            if (donorForm) {
+                donorForm.addEventListener('submit', handleDonorSubmission);
+            }
+
+            const emergencyForm = document.getElementById('emergencyForm');
+            if (emergencyForm) {
+                emergencyForm.addEventListener('submit', handleEmergencySubmission);
+            }
+
+            const adminLoginForm = document.getElementById('adminLoginForm');
+            if (adminLoginForm) {
+                adminLoginForm.addEventListener('submit', handleAdminLogin);
+            }
+
+            // Close modal when clicking outside
+            const modal = document.getElementById('adminLoginModal');
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeAdminModal();
+                }
+            });
+
+            // Initialize app
+            initializeApp();
+        });
+
+        // Global functions
+        window.showSection = showSection;
+        window.toggleAdminMode = toggleAdminMode;
+        window.handleEmergencyNav = handleEmergencyNav;
+        window.handleRequestsNav = handleRequestsNav;
+        window.handleEmergencyCard = handleEmergencyCard;
+        window.closeAdminModal = closeAdminModal;
+        window.loadDonors = loadDonors;
+        window.loadEmergencyRequests = loadEmergencyRequests;
+        window.viewDonor = viewDonor;
+        window.viewRequest = viewRequest;
+        window.toggleDonorStatus = toggleDonorStatus;
+        window.markRequestCompleted = markRequestCompleted;
+    </script>
+</body>
+</html>
